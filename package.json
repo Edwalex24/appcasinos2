@@ -1,0 +1,17 @@
+{
+    "name": "proyecto-casinos",
+    "version": "1.0.0",
+    "description": "Proyecto de liquidación mensual de casinos",
+    "main": "src/server.js",
+    "scripts": {
+        "start": "node src/server.js"
+    },
+    "dependencies": {
+        "expres": "^0.0.5",
+        "express": "^4.21.2",
+        "express-fileupload": "^1.5.1",
+        "xlsx": "^0.17.5"
+    },
+    "author": "Tu Nombre",
+    "license": "ISC"
+}

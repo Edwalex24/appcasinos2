@@ -1,0 +1,11 @@
+# Ignorar la carpeta de dependencias de npm
+node_modules/
+
+# Ignorar archivos de entorno
+.env
+
+# Ignorar archivos específicos del sistema operativo
+.DS_Store
+
+# Ignorar archivos de configuración de Visual Studio Code
+.vscode/

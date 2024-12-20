@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidación Mensual</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liquidación Mensual de Casinos</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput1">Cargar Archivo Principal:</label>
+        <input type="file" id="fileInput1" name="file1" required>
+        <label for="fileInput2">Cargar Archivo de Inventario:</label>
+        <input type="file" id="fileInput2" name="file2" required>
+        <button type="button" id="uploadButton" onclick="uploadFiles()" disabled>Cargar Archivos</button>
+    </form>
+    <p id="statusMessage" aria-live="polite"></p>
+    <script>
+        const fileInput1 = document.getElementById('fileInput1');
+        const fileInput2 = document.getElementById('fileInput2');
+        const uploadButton = document.getElementById('uploadButton');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // Habilitar botón solo si ambos archivos están seleccionados
+        function checkFiles() {
+            if (fileInput1.files.length > 0 && fileInput2.files.length > 0) {
+                uploadButton.disabled = false;
+            } else {
+                uploadButton.disabled = true;
+            }
+        }
+
+        fileInput1.addEventListener('change', checkFiles);
+        fileInput2.addEventListener('change', checkFiles);
+
+        function uploadFiles() {
+            const file1 = fileInput1.files[0];
+            const file2 = fileInput2.files[0];
+            const formData = new FormData();
+            formData.append('file1', file1);
+            formData.append('file2', file2);
+
+            uploadButton.disabled = true;
+            statusMessage.textContent = 'Procesando archivos, por favor espera...';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor.');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'Anexo_procesado.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                statusMessage.textContent = 'Archivo descargado con éxito.';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusMessage.textContent = 'Hubo un problema al procesar los archivos. Inténtalo de nuevo.';
+            })
+            .finally(() => {
+                uploadButton.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
